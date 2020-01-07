@@ -2,12 +2,24 @@ import connectDB from "../../utils/connectDb";
 import User from "../../models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import isEmail from "validator/lib/isEmail";
+import isLength from "validator/lib/isLength";
 
 connectDB();
 
 export default async (req, res) => {
   const { name, email, password } = req.body;
   try {
+    //  validation
+    if (!isLength(name, { min: 3, max: 10 })) {
+      return res.status(422).send("Name must be 3-10 characters long");
+    } else if (!password(name, { min: 6 })) {
+      return res
+        .status(422)
+        .send("password must be at least 6 characters long");
+    } else if (!isEmail(email)) {
+      return res.status(422).send("Email must be valid");
+    }
     //  user exists or not?
     const user = await User.findOne({ email });
     if (user) {
