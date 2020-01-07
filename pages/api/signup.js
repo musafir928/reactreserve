@@ -1,5 +1,6 @@
 import connectDB from "../../utils/connectDb";
 import User from "../../models/User";
+import Cart from "../../models/Cart";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import isEmail from "validator/lib/isEmail";
@@ -13,7 +14,7 @@ export default async (req, res) => {
     //  validation
     if (!isLength(name, { min: 3, max: 10 })) {
       return res.status(422).send("Name must be 3-10 characters long");
-    } else if (!password(name, { min: 6 })) {
+    } else if (!isLength(password, { min: 6 })) {
       return res
         .status(422)
         .send("password must be at least 6 characters long");
@@ -36,6 +37,9 @@ export default async (req, res) => {
       password: hash
     }).save();
     console.log({ newUser });
+
+    // Create cart for new user
+    await new Cart({ user: newUser._id }).save();
 
     // create token for the new user
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
