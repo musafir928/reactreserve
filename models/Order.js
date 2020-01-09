@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import shortid from "shortid";
 
-const { String, Number, ObjectId } = mongoose.Schema.Types;
+const { ObjectId, Number } = mongoose.Schema.Types;
 
 const OrderSchema = new mongoose.Schema(
   {
@@ -35,5 +34,5 @@ const OrderSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.Cart.order ||
-  mongoose.model("Order", OrderSchema);
+// prettier-ignore
+export default mongoose.models.Order || mongoose.model("Order", OrderSchema);

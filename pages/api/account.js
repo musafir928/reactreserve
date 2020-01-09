@@ -6,8 +6,9 @@ connectDB();
 
 export default async (req, res) => {
   if (!("authorization" in req.headers)) {
-    return res.status(401).send("No Authorization Token");
+    return res.status(401).send("No authorization token");
   }
+
   try {
     const { userId } = jwt.verify(
       req.headers.authorization,
@@ -19,7 +20,7 @@ export default async (req, res) => {
     } else {
       res.status(404).send("User not found");
     }
-  } catch (err) {
+  } catch (error) {
     res.status(403).send("Invalid token");
   }
 };
