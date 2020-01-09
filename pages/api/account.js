@@ -5,6 +5,20 @@ import connectDB from "../../utils/connectDb";
 connectDB();
 
 export default async (req, res) => {
+  switch (req.method) {
+    case "GET":
+      await handleGet(req, res);
+      break;
+    case "PUT":
+      await handlePut(req, res);
+      break;
+    default:
+      res.status(405).send(`method ${req.method} not allowed!`);
+      break;
+  }
+};
+
+async function handleGet(req, res) {
   if (!("authorization" in req.headers)) {
     return res.status(401).send("No authorization token");
   }
@@ -23,4 +37,10 @@ export default async (req, res) => {
   } catch (error) {
     res.status(403).send("Invalid token");
   }
-};
+}
+
+async function handlePut(req, res) {
+  const { _id, role } = req.body;
+  await User.findOneAndUpdate({ _id }, { role });
+  res.status(203).send(`user role updated`);
+}

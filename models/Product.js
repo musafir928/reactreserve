@@ -12,7 +12,6 @@ const ProductSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  // unique ID
   sku: {
     type: String,
     unique: true,
@@ -28,5 +27,5 @@ const ProductSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.models.Product ||
-  mongoose.model("Product", ProductSchema);
+// prettier-ignore
+export default mongoose.models.Product || mongoose.model("Product", ProductSchema);

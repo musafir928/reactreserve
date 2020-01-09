@@ -10,20 +10,21 @@ const { ObjectId } = mongoose.Types;
 export default async (req, res) => {
   switch (req.method) {
     case "GET":
-      await handelGetRequest(req, res);
+      await handleGetRequest(req, res);
       break;
     case "PUT":
-      await handelPutRequest(req, res);
+      await handlePutRequest(req, res);
       break;
     case "DELETE":
-      await handelDelete(req, res);
+      await handleDeleteRequest(req, res);
       break;
     default:
       res.status(405).send(`Method ${req.method} not allowed`);
+      break;
   }
 };
 
-async function handelGetRequest(req, res) {
+async function handleGetRequest(req, res) {
   if (!("authorization" in req.headers)) {
     return res.status(401).send("No authorization token");
   }
@@ -37,13 +38,13 @@ async function handelGetRequest(req, res) {
       model: "Product"
     });
     res.status(200).json(cart.products);
-  } catch (err) {
-    console.error(err);
-    res.status(403).send("please login again");
+  } catch (error) {
+    console.error(error);
+    res.status(403).send("Please login again");
   }
 }
 
-async function handelPutRequest(req, res) {
+async function handlePutRequest(req, res) {
   const { quantity, productId } = req.body;
   if (!("authorization" in req.headers)) {
     return res.status(401).send("No authorization token");
@@ -53,37 +54,34 @@ async function handelPutRequest(req, res) {
       req.headers.authorization,
       process.env.JWT_SECRET
     );
-    // Get user cart based on user id
+    // Get user cart based on userId
     const cart = await Cart.findOne({ user: userId });
-    // check if product already exists in cart
-    const productExists = cart.products.some(e =>
-      ObjectId(productId).equals(e.product)
+    // Check if product already exists in cart
+    const productExists = cart.products.some(doc =>
+      ObjectId(productId).equals(doc.product)
     );
-    // if so, increment the quantity by provided number
+    // If so, increment quantity (by number provided to request)
     if (productExists) {
       await Cart.findOneAndUpdate(
         { _id: cart._id, "products.product": productId },
-
         { $inc: { "products.$.quantity": quantity } }
       );
     } else {
-      //  if no exists
+      // If not, add new product with given quantity
       const newProduct = { quantity, product: productId };
       await Cart.findOneAndUpdate(
-        {
-          _id: cart._id
-        },
+        { _id: cart._id },
         { $addToSet: { products: newProduct } }
       );
     }
-    res.status(200).send("Cart Updated");
-  } catch (err) {
-    console.error(err);
-    res.status(403).send("please login again");
+    res.status(200).send("Cart updated");
+  } catch (error) {
+    console.error(error);
+    res.status(403).send("Please login again");
   }
 }
 
-async function handelDelete(req, res) {
+async function handleDeleteRequest(req, res) {
   const { productId } = req.query;
   if (!("authorization" in req.headers)) {
     return res.status(401).send("No authorization token");
@@ -102,8 +100,8 @@ async function handelDelete(req, res) {
       model: "Product"
     });
     res.status(200).json(cart.products);
-  } catch (err) {
-    console.error(err);
-    res.status(403).send("please login again");
+  } catch (error) {
+    console.error(error);
+    res.status(403).send("Please login again");
   }
 }

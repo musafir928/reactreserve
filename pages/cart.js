@@ -26,7 +26,7 @@ function Cart({ products, user }) {
     setCartProducts(res.data);
   }
 
-  async function handelCheckout(paymentData) {
+  async function handleCheckout(paymentData) {
     try {
       setLoading(true);
       const url = `${baseUrl}/api/checkout`;
@@ -52,7 +52,7 @@ function Cart({ products, user }) {
       />
       <CartSummary
         products={cartProducts}
-        handleCheckout={handelCheckout}
+        handleCheckout={handleCheckout}
         success={success}
       />
     </Segment>
